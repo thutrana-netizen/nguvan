@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nền tảng Ôn tập Ngữ văn THCS - Quy trình Lập kế hoạch CLB Đọc sách</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-900 text-slate-100">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 text-white p-2 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <i data-lucide="book-open" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-white leading-tight">EduSocial Study Hub</h1>
+                    <p class="text-xs text-indigo-400 font-medium">Nền tảng Ôn tập Khoa học Xã hội THCS</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
+                    Môn: Ngữ Văn THCS
+                </span>
+                <button onclick="toggleSidebar()" class="md:hidden text-slate-300 hover:text-white p-2">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main App Layout -->
+    <div class="flex-1 flex max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6">
+
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="w-72 bg-slate-800/50 backdrop-blur border border-slate-700/60 rounded-2xl p-4 flex flex-col justify-between hidden md:flex shrink-0 h-[calc(100vh-7rem)] sticky top-20">
+            <div class="space-y-4">
+                <div class="px-3 py-2">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Danh mục bài học</p>
+                    <h2 class="text-sm font-bold text-slate-200 mt-1">Chủ đề: CLB Đọc Sách</h2>
+                </div>
+                <nav class="space-y-1">
+                    <button onclick="switchTab('knowledge')" id="nav-knowledge" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+                        <i data-lucide="book-open-check" class="w-4 h-4"></i>
+                        <span>Knowledge Base</span>
+                    </button>
+                    <button onclick="switchTab('flashcards')" id="nav-flashcards" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-700/50 hover:text-slate-200">
+                        <i data-lucide="layers" class="w-4 h-4"></i>
+                        <span>Flashcard Ôn tập</span>
+                    </button>
+                    <button onclick="switchTab('quiz')" id="nav-quiz" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-700/50 hover:text-slate-200">
+                        <i data-lucide="help-circle" class="w-4 h-4"></i>
+                        <span>Luyện tập Trắc nghiệm</span>
+                    </button>
+                    <button onclick="switchTab('mindmap')" id="nav-mindmap" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-700/50 hover:text-slate-200">
+                        <i data-lucide="git-fork" class="w-4 h-4"></i>
+                        <span>Sơ đồ Tư duy Interactive</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Stats Mini Card -->
+            <div class="bg-slate-900/60 border border-slate-700/50 rounded-xl p-3.5 space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-slate-400 font-medium">Tiến độ ôn tập</span>
+                    <span id="progress-percent" class="text-indigo-400 font-bold">25%</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-2 overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-emerald-400 h-2 rounded-full transition-all duration-500" style="width: 25%"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 min-w-0">
+
+            <!-- TAB 1: KNOWLEDGE BASE -->
+            <section id="tab-knowledge" class="space-y-6">
+                <!-- Header Banner -->
+                <div class="bg-gradient-to-r from-indigo-900/50 via-purple-900/30 to-slate-800 border border-indigo-500/30 rounded-2xl p-6 relative overflow-hidden shadow-xl">
+                    <div class="absolute -right-10 -bottom-10 opacity-10">
+                        <i data-lucide="book-open" class="w-64 h-64 text-indigo-400"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <span class="px-3 py-1 rounded-md bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-semibold uppercase tracking-wider">Hình thành kiến thức</span>
+                        <h2 class="text-2xl font-bold text-white mt-2">I. Quy trình lập kế hoạch Câu lạc bộ Đọc sách</h2>
+                        <p class="text-slate-300 text-sm mt-1 max-w-2xl">Hướng dẫn chi tiết các giai đoạn chuẩn bị, tiến hành và kết thúc buổi sinh hoạt CLB Đọc sách dành cho học sinh THCS.</p>
+                    </div>
+                </div>
+
+                <!-- Section Grid: Objectives & Teaching Plans -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 space-y-2">
+                        <div class="flex items-center space-x-2 text-indigo-400 font-semibold text-sm">
+                            <i data-lucide="target" class="w-4 h-4"></i>
+                            <span>a. Mục tiêu</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">Nắm được quy trình xây dựng kế hoạch, biết lập kế hoạch hoạt động, xác định vai trò từng thành viên, cách thức và nguyên tắc sinh hoạt CLB.</p>
+                    </div>
+
+                    <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 space-y-2">
+                        <div class="flex items-center space-x-2 text-amber-400 font-semibold text-sm">
+                            <i data-lucide="file-text" class="w-4 h-4"></i>
+                            <span>b. Nội dung</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">Đọc và quan sát các mẫu phiếu học tập trong SGK (trang 13-16), chia lớp thành 3 nhóm thảo luận quy trình viết kế hoạch.</p>
+                    </div>
+
+                    <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 space-y-2">
+                        <div class="flex items-center space-x-2 text-emerald-400 font-semibold text-sm">
+                            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                            <span>c. Sản phẩm</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">Các câu trả lời, phiếu học tập đã hoàn thiện và kết quả thảo luận của học sinh theo từng giai đoạn.</p>
+                    </div>
+                </div>
+
+                <!-- Structured Learning Activities -->
+                <div class="bg-slate-800/40 border border-slate-700/60 rounded-2xl p-6 space-y-6">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i data-lucide="workflow" class="text-indigo-400 w-5 h-5"></i>
+                        d. Tổ chức thực hiện & Sản phẩm dự kiến
+                    </h3>
+
+                    <!-- Phase 1 Interactive Accordion / Details -->
+                    <div class="space-y-4">
+                        <!-- Activity 1 -->
+                        <div class="bg-slate-800/80 border border-slate-700 rounded-xl overflow-hidden shadow-md">
+                            <div class="bg-slate-700/40 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
+                                <span class="font-semibold text-sm text-indigo-300 flex items-center gap-2">
+                                    <span class="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center text-xs font-bold">1</span>
+                                    Hoạt động Khởi động & Nhận diện Giai đoạn
+                                </span>
+                                <span class="text-xs bg-slate-600/50 text-slate-300 px-2.5 py-1 rounded-full">Tổng quan</span>
+                            </div>
+                            <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                <div class="space-y-2 bg-slate-900/40 p-3 rounded-lg border border-slate-700/40">
+                                    <p class="font-bold text-slate-200">Hoạt động GV & HS:</p>
+                                    <ul class="space-y-1.5 text-slate-300 list-disc list-inside">
+                                        <li><strong>B1 (Chuyển giao):</strong> GV yêu cầu đọc kĩ mẫu phiếu SGK & hỏi: <em>"Để xây dựng kế hoạch CLB đọc sách có mấy giai đoạn?"</em></li>
+                                        <li><strong>B2 (Thực hiện):</strong> HS suy nghĩ cá nhân.</li>
+                                        <li><strong>B3 (Báo cáo):</strong> 1 HS trình bày, lớp nhận xét.</li>
+                                        <li><strong>B4 (Kết luận):</strong> GV nhận xét và chốt định hướng.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-2 bg-indigo-950/30 p-3 rounded-lg border border-indigo-800/30">
+                                    <p class="font-bold text-indigo-300">Sản phẩm dự kiến:</p>
+                                    <div class="flex flex-wrap gap-2 pt-1">
+                                        <span class="px-3 py-1.5 bg-indigo-500/20 text-indigo-200 border border-indigo-500/30 rounded-lg font-medium">1. Giai đoạn Chuẩn bị</span>
+                                        <span class="px-3 py-1.5 bg-purple-500/20 text-purple-200 border border-purple-500/30 rounded-lg font-medium">2. Giai đoạn Tiến hành</span>
+                                        <span class="px-3 py-1.5 bg-emerald-500/20 text-emerald-200 border border-emerald-500/30 rounded-lg font-medium">3. Giai đoạn Kết thúc</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Activity 2: Deep Dive into 3 Phases -->
+                        <div class="bg-slate-800/80 border border-slate-700 rounded-xl overflow-hidden shadow-md">
+                            <div class="bg-slate-700/40 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
+                                <span class="font-semibold text-sm text-amber-300 flex items-center gap-2">
+                                    <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-xs font-bold">2</span>
+                                    Hoạt động Thảo luận Nhóm Chi tiết
+                                </span>
+                                <span class="text-xs bg-slate-600/50 text-slate-300 px-2.5 py-1 rounded-full">Chia 3 Nhóm</span>
+                            </div>
+                            <div class="p-4 space-y-4 text-xs">
+                                <div class="bg-slate-900/40 p-3 rounded-lg border border-slate-700/40 space-y-2">
+                                    <p class="font-bold text-slate-200">Quy trình Tổ chức (B1 - B4):</p>
+                                    <p class="text-slate-300 leading-relaxed">
+                                        GV chia lớp thành 3 nhóm quan sát mẫu phiếu SGK (trang 13-14). N1 tìm nội dung GĐ Chuẩn bị; N2 tìm GĐ Tiến hành; N3 tìm GĐ Kết thúc. GV gợi ý mẫu 1, 2 (Chuẩn bị), mẫu 3, 4 (Tiến hành), thông báo kế hoạch tiếp theo (Kết thúc).
+                                    </p>
+                                </div>
+
+                                <!-- 3 Cards for 3 Phases -->
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <!-- Phase 1 -->
+                                    <div class="bg-slate-900/80 border-t-4 border-indigo-500 border-x border-b border-slate-700/80 rounded-xl p-3.5 space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-bold text-indigo-400 text-sm">1. Giai đoạn Chuẩn bị</span>
+                                            <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded">Nhóm 1</span>
+                                        </div>
+                                        <p class="text-[11px] text-slate-400 italic">Thống nhất 3 nội dung trọng tâm:</p>
+                                        <ul class="space-y-1.5 text-slate-300 list-disc list-inside">
+                                            <li><strong>Nội dung bàn luận:</strong> Tên sách, tác giả, số chương/phần đọc.</li>
+                                            <li><strong>Phân công vai trò:</strong> Phân chia các bạn trong nhóm.</li>
+                                            <li><strong>Phân công nhiệm vụ:</strong> Người điều phối, khai thác nội dung, phụ trách kỹ thuật.</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Phase 2 -->
+                                    <div class="bg-slate-900/80 border-t-4 border-amber-500 border-x border-b border-slate-700/80 rounded-xl p-3.5 space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-bold text-amber-400 text-sm">2. Giai đoạn Tiến hành</span>
+                                            <span class="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded">Nhóm 2</span>
+                                        </div>
+                                        <p class="text-[11px] text-slate-400 italic">Thống nhất 2 nội dung trọng tâm:</p>
+                                        <ul class="space-y-1.5 text-slate-300 list-disc list-inside">
+                                            <li><strong>Các hoạt động:</strong> Xác định các hoạt động sẽ tiến hành.</li>
+                                            <li><strong>Trình tự & Thời gian:</strong> Sắp xếp thứ tự và thời lượng từng hoạt động.</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Phase 3 -->
+                                    <div class="bg-slate-900/80 border-t-4 border-emerald-500 border-x border-b border-slate-700/80 rounded-xl p-3.5 space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-bold text-emerald-400 text-sm">3. Giai đoạn Kết thúc</span>
+                                            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Nhóm 3</span>
+                                        </div>
+                                        <p class="text-[11px] text-slate-400 italic">Thống nhất 4 nội dung trọng tâm:</p>
+                                        <ul class="space-y-1.5 text-slate-300 list-disc list-inside">
+                                            <li>Thống nhất cuốn sách đọc buổi tiếp theo.</li>
+                                            <li>Phân công chuẩn bị ở nhà (tìm từ hay, liên hệ sách khác, lập hồ sơ nhân vật, vẽ hình).</li>
+                                            <li>Nhận xét ưu / hạn chế buổi sinh hoạt trước.</li>
+                                            <li>Thống nhất thời gian, hình thức, địa điểm.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Teacher's Important Notes Callout -->
+                                <div class="bg-rose-950/20 border border-rose-500/30 rounded-xl p-3.5 flex items-start gap-3">
+                                    <i data-lucide="alert-circle" class="w-5 h-5 text-rose-400 shrink-0 mt-0.5"></i>
+                                    <div class="space-y-1 text-slate-300">
+                                        <p class="font-bold text-rose-300">GV Nhận xét, Chốt định hướng & Lưu ý quan trọng:</p>
+                                        <ul class="list-disc list-inside space-y-1 text-[11px] text-slate-300">
+                                            <li>Vai trò, nhiệm vụ của mỗi thành viên sẽ <strong>thay đổi lần lượt</strong> qua các buổi sinh hoạt để tạo tính linh hoạt và công bằng.</li>
+                                            <li><strong>Nguyên tắc làm việc nhóm:</strong> Tôn trọng quyền riêng tư các thành viên, <strong>không chia sẻ bài viết của nhóm ra ngoài</strong> khi chưa có sự đồng ý.</li>
+                                            <li>Tham khảo các mẫu phiếu đọc sách chi tiết tại SGK trang 15, 16.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: FLASHCARDS -->
+            <section id="tab-flashcards" class="hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Flashcards Thấu hiểu Kiến thức</h2>
+                        <p class="text-xs text-slate-400">Lật thẻ để kiểm tra trí nhớ về các giai đoạn và quy trình sinh hoạt CLB.</p>
+                    </div>
+                    <span id="card-indicator" class="text-xs text-indigo-400 font-semibold bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">Thẻ 1 / 4</span>
+                </div>
+
+                <!-- Card Container -->
+                <div class="flex flex-col items-center justify-center min-h-[320px]">
+                    <div id="flashcard" onclick="flipCard()" class="w-full max-w-xl h-72 cursor-pointer perspective-1000">
+                        <div id="card-inner" class="relative w-full h-full duration-500 transform-style-3d transition-transform">
+                            <!-- Front -->
+                            <div class="absolute w-full h-full bg-slate-800 border-2 border-indigo-500/40 rounded-2xl p-6 flex flex-col justify-between items-center text-center backface-hidden shadow-2xl">
+                                <span class="text-xs font-semibold text-indigo-400 uppercase tracking-widest">Câu hỏi / Giai đoạn</span>
+                                <h3 id="card-question" class="text-lg font-bold text-white my-auto">Giai đoạn Chuẩn bị bao gồm những nội dung chính nào?</h3>
+                                <p class="text-xs text-slate-500 flex items-center gap-1"><i data-lucide="rotate-cw" class="w-3 h-3"></i> Nhấp để xem đáp án</p>
+                            </div>
+                            <!-- Back -->
+                            <div class="absolute w-full h-full bg-gradient-to-br from-indigo-900 to-slate-800 border-2 border-emerald-500/40 rounded-2xl p-6 flex flex-col justify-between items-center text-center backface-hidden [transform:rotateY(180deg)] shadow-2xl">
+                                <span class="text-xs font-semibold text-emerald-400 uppercase tracking-widest">Đáp án trọng tâm</span>
+                                <div id="card-answer" class="text-xs text-slate-200 my-auto text-left space-y-1 leading-relaxed">
+                                    <p>Thống nhất 3 nội dung:</p>
+                                    <p>1. Scope: Tên sách, tác giả, số chương/phần.</p>
+                                    <p>2. Phân công vai trò thành viên.</p>
+                                    <p>3. Phân công nhiệm vụ: Điều phối, khai thác nội dung, kĩ thuật.</p>
+                                </div>
+                                <p class="text-xs text-slate-500 flex items-center gap-1"><i data-lucide="rotate-cw" class="w-3 h-3"></i> Nhấp để xoay lại</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Controls -->
+                    <div class="flex items-center space-x-4 mt-6">
+                        <button onclick="prevCard()" class="p-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 transition">
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                        </button>
+                        <button onclick="flipCard()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs shadow-lg shadow-indigo-600/30 transition">
+                            Lật Thẻ
+                        </button>
+                        <button onclick="nextCard()" class="p-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 transition">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: QUIZ PRACTICE -->
+            <section id="tab-quiz" class="hidden space-y-6">
+                <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6">
+                    <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+                        <div>
+                            <h2 class="text-lg font-bold text-white">Bài Luyện Tập Trắc Nghiệm</h2>
+                            <p class="text-xs text-slate-400">Kiểm tra mức độ ghi nhớ kiến thức vừa học qua các câu hỏi trắc nghiệm khách quan.</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-400">Điểm số hiện tại</span>
+                            <div id="quiz-score" class="text-xl font-bold text-emerald-400">0 / 4</div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Questions Container -->
+                    <div id="quiz-container" class="space-y-6">
+                        <!-- Questions dynamically rendered via JS -->
+                    </div>
+
+                    <div class="mt-8 pt-4 border-t border-slate-700 flex justify-between items-center">
+                        <button onclick="resetQuiz()" class="px-4 py-2 rounded-xl border border-slate-600 hover:bg-slate-700 text-xs text-slate-300 font-medium transition">
+                            Làm lại bài
+                        </button>
+                        <span class="text-xs text-slate-500">Hệ thống chấm điểm tự động & phản hồi tức thì</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: INTERACTIVE MINDMAP -->
+            <section id="tab-mindmap" class="hidden space-y-6">
+                <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6">
+                    <div class="mb-6">
+                        <h2 class="text-lg font-bold text-white">Sơ đồ Tư duy Quy trình Lập kế hoạch CLB</h2>
+                        <p class="text-xs text-slate-400">Bấm vào các nhánh để xem/ẩn chi tiết kiến thức tổ chức.</p>
+                    </div>
+
+                    <!-- Mindmap Tree -->
+                    <div class="space-y-4">
+                        <!-- Root Node -->
+                        <div class="p-4 bg-indigo-950/60 border-2 border-indigo-500/50 rounded-xl text-center shadow-lg">
+                            <h3 class="font-bold text-indigo-200 text-base">QUY TRÌNH KẾ HOẠCH CLB ĐỌC SÁCH</h3>
+                            <p class="text-xs text-indigo-400">3 Giai đoạn Chính</p>
+                        </div>
+
+                        <!-- Branches Container -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Branch 1 -->
+                            <div class="space-y-2">
+                                <div onclick="toggleBranch('b1')" class="p-3 bg-slate-800 border border-indigo-500/40 rounded-lg cursor-pointer hover:bg-indigo-900/30 transition flex items-center justify-between">
+                                    <span class="font-bold text-xs text-indigo-300">1. CHUẨN BỊ</span>
+                                    <i data-lucide="chevron-down" id="icon-b1" class="w-4 h-4 text-indigo-400 transition-transform"></i>
+                                </div>
+                                <div id="content-b1" class="space-y-1.5 pl-2">
+                                    <div class="p-2.5 bg-slate-900/60 border border-slate-700/50 rounded-lg text-[11px] text-slate-300">
+                                        <strong>Nội dung:</strong> Tên sách, tác giả, số chương/phần
+                                    </div>
+                                    <div class="p-2.5 bg-slate-900/60 border border-slate-700/50 rounded-lg text-[11px] text-slate-300">
+                                        <strong>Vai trò:</strong> Phân công thành viên nhóm
+                                    </div>
+                                    <div class="p-2.5 bg-slate-900/60 border border-slate-700/50 rounded-lg text-[11px] text-slate-300">
+                                        <strong>Nhiệm vụ:</strong> Điều phối, khai thác nội dung, kỹ thuật
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Branch 2 -->
+                            <div class="space-y-2">
+                                <div onclick="toggleBranch('b2')" class="p-3 bg-slate-800 border border-amber-500/40 rounded-lg cursor-pointer hover:bg-amber-900/30 transition flex items-center justify-between">
+                                    <span class="font-bold text-xs text-amber-300">2. TIẾN HÀNH</span>
+                                    <i data-lucide="chevron-down" id="icon-b2" class="w-4 h-4 text-amber-400 transition-transform"></i>
+                                </div>
+                                <div id="content-b2" class="space-y-1.5 pl-2">
+                                    <div class="p-2.5 bg-slate-900/60 border border-slate-700/50 rounded-lg text-[11px] text-slate-300">
+                                        <strong>Hoạt động:</strong> Thống nhất các việc sẽ tiến hành
+                                    </div>
+                                    <div class="p-2.5 bg-slate-900/60 border border-slate-700/50 rounded-lg text-[11px] text-slate-300">
+                                        <strong>Thời gian:</strong> Sắp xếp trình tự & thời lượng
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Branch 3 -->
+                            <div class="space-y-2">
+                                <div onclick="toggleBranch('b3')" class="p-3 bg-slate-800 border border-emerald-500/40 rounded-lg cursor-pointer hover:bg-emerald-900/30 transition flex items-center justify-between">
+                                    <span class="font-bold text-xs text-emerald-300">3. KẾT THÚC</span>
+                                    <i data-lucide="chevron-down" id="icon-b3" class="w-4 h-4 text-emerald-400 transition-transform"></i>
+                                </div>
+                                <div id="content-b3" class="space-y-1.5 pl-2">
+                                    <div class="p-2.5 bg-slate-900/60 border border-slate-700/50 rounded-lg text-[11px] text-slate-300">
+                                        Chốt cuốn sách tiếp theo
+                                    </div>
+                                    <div class="p-2.5 bg-slate-900/60 border border-slate-700/50 rounded-lg text-[11px] text-slate-300">
+                                        Phân công về nhà (tìm từ hay, vẽ hình, hồ sơ nhân vật,...)
+                                    </div>
+                                    <div class="p-2.5 bg-slate-900/60 border border-slate-700/50 rounded-lg text-[11px] text-slate-300">
+                                        Rút kinh nghiệm buổi sinh hoạt
+                                    </div>
+                                    <div class="p-2.5 bg-slate-900/60 border border-slate-700/50 rounded-lg text-[11px] text-slate-300">
+                                        Chốt thời gian, địa điểm tới
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Application Logic Script -->
+    <script>
+        // Data Structures
+        const flashcardsData = [
+            {
+                q: "Để xây dựng một kế hoạch câu lạc bộ đọc sách có mấy giai đoạn chính?",
+                a: "Có 3 giai đoạn chính:
+1. Giai đoạn Chuẩn bị
+2. Giai đoạn Tiến hành
+3. Giai đoạn Kết thúc"
+            },
+            {
+                q: "Ở Giai đoạn Chuẩn bị, các thành viên cần thống nhất những nội dung gì?",
+                a: "Thống nhất 3 nội dung:
+- Phạm vi nội dung (Tên sách, tác giả, số chương/phần).
+- Phân công vai trò cho các bạn.
+- Phân công nhiệm vụ (Người điều phối, khai thác nội dung, phụ trách kỹ thuật)."
+            },
+            {
+                q: "Giai đoạn Tiến hành yêu cầu thống nhất những nội dung cơ bản nào?",
+                a: "Thống nhất 2 nội dung chính:
+1. Các hoạt động sẽ tiến hành.
+2. Trình tự và thời gian tổ chức từng hoạt động."
+            },
+            {
+                q: "Giai đoạn Kết thúc bao gồm những nhiệm vụ trọng tâm nào?",
+                a: "Thống nhất 4 nội dung:
+1. Cuốn sách đọc buổi tiếp theo.
+2. Phân công bài tập về nhà (từ hay, nhân vật, tranh vẽ,...).
+3. Đánh giá ưu điểm/hạn chế buổi họp.
+4. Thống nhất thời gian, địa điểm, hình thức."
+            }
+        ];
+
+        const quizQuestions = [
+            {
+                question: "Quy trình xây dựng kế hoạch câu lạc bộ đọc sách gồm bao nhiêu giai đoạn?",
+                options: ["2 giai đoạn", "3 giai đoạn", "4 giai đoạn", "5 giai đoạn"],
+                correct: 1,
+                explanation: "Quy trình chuẩn gồm 3 giai đoạn: Chuẩn bị, Tiến hành và Kết thúc."
+            },
+            {
+                question: "Nhiệm vụ nào sau đây KHÔNG thuộc giai đoạn Chuẩn bị?",
+                options: [
+                    "Thống nhất tên sách, tác giả, số chương",
+                    "Phân công người điều phối và kĩ thuật",
+                    "Nhận xét ưu điểm và hạn chế của buổi sinh hoạt trước",
+                    "Phân công vai trò cho các bạn trong nhóm"
+                ],
+                correct: 2,
+                explanation: "Nhận xét ưu điểm và hạn chế thuộc Giai đoạn Kết thúc."
+            },
+            {
+                question: "Trong quy trình thảo luận nhóm, vai trò và nhiệm vụ của các thành viên sẽ như thế nào?",
+                options: [
+                    "Cố định không bao giờ thay đổi",
+                    "Thay đổi lần lượt qua các buổi sinh hoạt",
+                    "Do Giáo viên chỉ định duy nhất một lần",
+                    "Chỉ có nhóm trưởng mới làm nhiệm vụ điều phối"
+                ],
+                correct: 1,
+                explanation: "Theo định hướng SGK, vai trò và nhiệm vụ của mỗi thành viên sẽ thay đổi lần lượt qua các buổi sinh hoạt."
+            },
+            {
+                question: "Nguyên tắc quan trọng nào cần tuân thủ khi thảo luận và đăng bài viết của nhóm?",
+                options: [
+                    "Chia sẻ tự do lên các mạng xã hội",
+                    "Không cần tôn trọng quyền riêng tư",
+                    "Không chia sẻ bài viết của nhóm ra ngoài khi chưa có sự đồng ý",
+                    "Giao toàn bộ công việc cho phụ trách kĩ thuật"
+                ],
+                correct: 2,
+                explanation: "Cần tôn trọng quyền riêng tư và KHÔNG chia sẻ bài viết của nhóm ra ngoài khi chưa được đồng ý."
+            }
+        ];
+
+        // App State
+        let currentCardIndex = 0;
+        let isFlipped = false;
+        let userAnswers = {};
+
+        // Initialization
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+            renderFlashcard();
+            renderQuiz();
+        });
+
+        // Navigation Switcher
+        function switchTab(tabId) {
+            const tabs = ['knowledge', 'flashcards', 'quiz', 'mindmap'];
+            tabs.forEach(tab => {
+                const element = document.getElementById(`tab-${tab}`);
+                const navBtn = document.getElementById(`nav-${tab}`);
+                
+                if (tab === tabId) {
+                    element.classList.remove('hidden');
+                    navBtn.className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-600/30";
+                } else {
+                    element.classList.add('hidden');
+                    navBtn.className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-700/50 hover:text-slate-200";
+                }
+            });
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+        }
+
+        // Flashcard Logic
+        function renderFlashcard() {
+            const card = flashcardsData[currentCardIndex];
+            document.getElementById('card-question').innerText = card.q;
+            document.getElementById('card-answer').innerText = card.a;
+            document.getElementById('card-indicator').innerText = `Thẻ ${currentCardIndex + 1} / ${flashcardsData.length}`;
+            
+            // Reset Flip State
+            isFlipped = false;
+            document.getElementById('card-inner').style.transform = "rotateY(0deg)";
+        }
+
+        function flipCard() {
+            isFlipped = !isFlipped;
+            const cardInner = document.getElementById('card-inner');
+            cardInner.style.transform = isFlipped ? "rotateY(180deg)" : "rotateY(0deg)";
+        }
+
+        function nextCard() {
+            currentCardIndex = (currentCardIndex + 1) % flashcardsData.length;
+            renderFlashcard();
+        }
+
+        function prevCard() {
+            currentCardIndex = (currentCardIndex - 1 + flashcardsData.length) % flashcardsData.length;
+            renderFlashcard();
+        }
+
+        // Quiz Logic
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = quizQuestions.map((q, qIndex) => `
+                <div class="bg-slate-900/60 border border-slate-700/50 rounded-xl p-4 space-y-3">
+                    <p class="font-semibold text-sm text-slate-200">${qIndex + 1}. ${q.question}</p>
+                    <div class="space-y-2">
+                        ${q.options.map((opt, oIndex) => `
+                            <button onclick="selectOption(${qIndex}, ${oIndex})" 
+                                id="opt-${qIndex}-${oIndex}"
+                                class="w-full text-left p-2.5 rounded-lg border text-xs transition-all border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center justify-between">
+                                <span>${opt}</span>
+                                <span id="icon-${qIndex}-${oIndex}"></span>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="explanation-${qIndex}" class="hidden p-3 rounded-lg bg-indigo-950/40 border border-indigo-800/40 text-[11px] text-indigo-300">
+                        <strong>Giải thích:</strong> ${q.explanation}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectOption(qIdx, oIdx) {
+            if (userAnswers[qIdx] !== undefined) return; // Prevent changing after selection
+
+            userAnswers[qIdx] = oIdx;
+            const isCorrect = oIdx === quizQuestions[qIdx].correct;
+
+            // Highlight Option
+            const btn = document.getElementById(`opt-${qIdx}-${oIdx}`);
+            if (isCorrect) {
+                btn.className = "w-full text-left p-2.5 rounded-lg border text-xs transition-all border-emerald-500 bg-emerald-950/40 text-emerald-200 flex items-center justify-between font-medium";
+                document.getElementById(`icon-${qIdx}-${oIdx}`).innerHTML = '<i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>';
+            } else {
+                btn.className = "w-full text-left p-2.5 rounded-lg border text-xs transition-all border-rose-500 bg-rose-950/40 text-rose-200 flex items-center justify-between font-medium";
+                document.getElementById(`icon-${qIdx}-${oIdx}`).innerHTML = '<i data-lucide="x" class="w-4 h-4 text-rose-400"></i>';
+
+                // Highlight correct option
+                const correctBtn = document.getElementById(`opt-${qIdx}-${quizQuestions[qIdx].correct}`);
+                correctBtn.className = "w-full text-left p-2.5 rounded-lg border text-xs transition-all border-emerald-500 bg-emerald-950/20 text-emerald-300 flex items-center justify-between font-medium";
+            }
+
+            // Reveal explanation
+            document.getElementById(`explanation-${qIdx}`).classList.remove('hidden');
+            lucide.createIcons();
+
+            updateScore();
+        }
+
+        function updateScore() {
+            let score = 0;
+            Object.keys(userAnswers).forEach(qIdx => {
+                if (userAnswers[qIdx] === quizQuestions[qIdx].correct) {
+                    score++;
+                }
+            });
+            document.getElementById('quiz-score').innerText = `${score} / ${quizQuestions.length}`;
+            
+            // Update Overall Progress Bar
+            const totalItems = quizQuestions.length;
+            const answeredItems = Object.keys(userAnswers).length;
+            const progress = Math.round((answeredItems / totalItems) * 75) + 25; // 25% base + quiz progress
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('progress-percent').innerText = `${progress}%`;
+        }
+
+        function resetQuiz() {
+            userAnswers = {};
+            document.getElementById('quiz-score').innerText = `0 / ${quizQuestions.length}`;
+            renderQuiz();
+        }
+
+        // Mindmap Logic
+        function toggleBranch(id) {
+            const content = document.getElementById(`content-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(-90deg)';
+            }
+        }
+    </script>
+</body>
+</html>
